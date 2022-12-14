@@ -15,7 +15,5 @@ const app = express();
 app.use(cors());
 app.use(json());
 
-app.use();
-
 const port = process.env.PORT;
 app.listen(port, () => console.log(`Running server on http://localhost:${port}`));
