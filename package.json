@@ -1,9 +1,12 @@
 {
   "name": "shortly-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module",
+  "description": "API do projeto shortly (encurtador de URL)",
+  "main": "src/server.js",
   "scripts": {
+    "dev": "npx nodemon src/server.js",
+    "start": "node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
