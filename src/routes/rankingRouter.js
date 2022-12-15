@@ -1,5 +1,3 @@
-/* eslint-disable import/order */
-/* eslint-disable import/extensions */
 import { Router } from 'express';
 
 const router = Router();

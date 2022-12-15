@@ -1,6 +1,4 @@
-/* eslint-disable import/order */
-/* eslint-disable import/extensions */
-import { deleteShortUrl, getUrlsById, openShortUrl, postShortUrl } from '../controllers/urls.Controller.js';
+import { deleteShortUrl, getUrlsById, openShortUrl, postShortUrl } from '../controllers/urlsController.js';
 
 import { Router } from 'express';
 
