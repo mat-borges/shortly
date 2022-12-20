@@ -13,7 +13,7 @@ export function signUpSchemaValidation(req, res, next) {
   const { name, email, password } = req.body;
   const user = {
     name: cleanStringData(name),
-    email: cleanStringData(email),
+    email: cleanStringData(email).toLowerCase(),
     password: cleanStringData(password),
   };
   const { error } = signUpSchema.validate(user, { abortEarly: false });
@@ -23,7 +23,7 @@ export function signUpSchemaValidation(req, res, next) {
     res.status(422).send({ message: errors });
   } else {
     const hashPassword = bcrypt.hashSync(password, 12);
-    res.locals.user = { name, email, password: hashPassword };
+    res.locals.user = { ...user, password: hashPassword };
     next();
   }
 }
@@ -46,7 +46,7 @@ export async function checkEmailExists(req, res, next) {
 
 export function signInSchemaValidation(req, res, next) {
   const { email, password } = req.body;
-  const user = { email: cleanStringData(email), password: cleanStringData(password) };
+  const user = { email: cleanStringData(email).toLowerCase(), password: cleanStringData(password) };
   const { error } = signInSchema.validate(user, { abortEarly: false });
 
   if (error) {
