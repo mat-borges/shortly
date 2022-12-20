@@ -36,7 +36,19 @@ export async function getUrlById(req, res) {
 }
 
 export async function openShortUrl(req, res) {
-  res.sendStatus(501);
+  const { shortUrl } = req.params;
+  try {
+    const urlExist = await connection.query(`SELECT url FROM urls WHERE "shortUrl"=$1`, [shortUrl]);
+    if (!urlExist.rows[0]) {
+      return res.sendStatus(404);
+    } else {
+      const url = urlExist.rows[0].url;
+      return res.redirect(url);
+    }
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 }
 
 export async function deleteShortUrl(req, res) {
