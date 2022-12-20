@@ -1,12 +1,19 @@
-/* eslint-disable import/order */
-/* eslint-disable import/extensions */
-import { postSignIn, postSignUp } from '../controllers/authController.js';
+import {
+  checkEmailExists,
+  generateToken,
+  sessionExists,
+  signInSchemaValidation,
+  signUpSchemaValidation,
+  verifyUserCredentials,
+} from '../middlewares/authMiddleware.js';
+import { getTest, postSignIn, postSignUp } from '../controllers/authController.js';
 
 import { Router } from 'express';
 
 const router = Router();
 
-router.post(`/sign-up`, postSignUp);
-router.post(`/sign-in`, postSignIn);
+router.post(`/signUp`, signUpSchemaValidation, checkEmailExists, postSignUp);
+router.post(`/signIn`, signInSchemaValidation, verifyUserCredentials, sessionExists, generateToken, postSignIn);
+router.get(`/test`, getTest);
 
 export default router;
