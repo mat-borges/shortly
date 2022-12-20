@@ -1,6 +1,6 @@
 import { connection } from '../db/db.js';
 
-export async function verifyHeadersAuthorization(req, res, next) {
+export async function verifyAuthorization(req, res, next) {
   const { authorization } = req.headers;
   const token = authorization?.replace(`Bearer `, ``);
   try {

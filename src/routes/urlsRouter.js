@@ -2,13 +2,13 @@ import { deleteShortUrl, getUrlById, openShortUrl, postShortUrl } from '../contr
 
 import { Router } from 'express';
 import { validateUrlSchema } from '../middlewares/urlsMiddleware.js';
-import { verifyHeadersAuthorization } from '../middlewares/verifyAuthorizationMiddleware.js';
+import { verifyAuthorization } from '../middlewares/verifyAuthorizationMiddleware.js';
 
 const router = Router();
 
-router.post(`/urls/shorten`, verifyHeadersAuthorization, validateUrlSchema, postShortUrl);
+router.post(`/urls/shorten`, verifyAuthorization, validateUrlSchema, postShortUrl);
 router.get(`/urls/:id`, getUrlById);
 router.get(`/urls/open/:shortUrl`, openShortUrl);
-router.delete(`urls/:id`, deleteShortUrl);
+router.delete(`urls/:id`, verifyAuthorization, deleteShortUrl);
 
 export default router;
