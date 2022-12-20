@@ -8,7 +8,7 @@ export async function verifyAuthorization(req, res, next) {
     if (!session.rows[0]) {
       res.sendStatus(401);
     } else {
-      res.locals.user_id = session.rows[0].user_id;
+      res.locals.user_id = parseInt(session.rows[0].user_id);
       next();
     }
   } catch (err) {

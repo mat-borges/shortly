@@ -53,10 +53,10 @@ export async function openShortUrl(req, res) {
 }
 
 export async function deleteShortUrl(req, res) {
-  const id = parseInt(req.locals.id);
+  const id = parseInt(res.locals.id);
   try {
-    await connection.query(`SELECT * FROM url WHERE id=$1`, [id]);
-    res.sendStatus(501);
+    await connection.query(`DELETE FROM urls WHERE id=$1`, [id]);
+    res.sendStatus(204);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
