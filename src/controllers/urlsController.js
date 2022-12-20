@@ -18,8 +18,21 @@ export async function postShortUrl(req, res) {
   }
 }
 
-export async function getUrlsById(req, res) {
-  res.sendStatus(501);
+export async function getUrlById(req, res) {
+  const id = parseInt(req.params.id);
+
+  try {
+    const url = await connection.query(`SELECT * FROM urls WHERE id=$1`, [id]);
+    if (!url.rows[0]) {
+      return res.sendStatus(404);
+    } else {
+      const body = { id, shortUrl: url.rows[0].shortUrl, url: url.rows[0].url };
+      return res.send(body);
+    }
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 }
 
 export async function openShortUrl(req, res) {
