@@ -14,7 +14,7 @@ export async function getUser(req, res) {
 		  GROUP BY users.id;`,
       [user_id]
     );
-    res.status(501).send(user.rows[0]);
+    res.send(user.rows[0]);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
