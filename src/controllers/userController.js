@@ -4,7 +4,8 @@ export async function getUser(req, res) {
   const { user_id } = res.locals;
   try {
     const user = await connection.query(
-      `SELECT users.id, users.name, SUM(urls."visitCount")::INTEGER AS "visitCount",
+      `SELECT users.id, users.name,
+        SUM(urls."visitCount")::INTEGER AS "visitCount",
         json_agg(
 			    json_build_object('id',urls.id,'shortUrl',urls."shortUrl",'url',urls.url,'visitCount',urls."visitCount")
 		    ) AS "shortenedUrls"
