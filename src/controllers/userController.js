@@ -1,7 +1,8 @@
 import { connection } from '../db/db.js';
 
 export async function getUser(req, res) {
-  const { user_id } = res.locals;
+  const { user_id } = res.locals.user;
+
   try {
     const user = await connection.query(
       `SELECT users.id, users.name,

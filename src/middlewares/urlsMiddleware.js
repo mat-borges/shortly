@@ -17,7 +17,7 @@ export async function validateUrlSchema(req, res, next) {
 
 export async function verifyUrlUser(req, res, next) {
   const id = parseInt(req.params.id);
-  const user_id = parseInt(res.locals.user_id);
+  const user_id = parseInt(res.locals.user.user_id);
   try {
     const url = await connection.query(`SELECT * FROM urls WHERE id=$1`, [id]);
     if (!url.rows[0]) {

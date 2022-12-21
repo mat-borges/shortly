@@ -3,7 +3,6 @@ import { signInSchema, signUpSchema } from '../models/authSchemas.js';
 import bcrypt from 'bcrypt';
 import { cleanStringData } from '../server.js';
 import { connection } from '../db/db.js';
-import dayjs from 'dayjs';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 
@@ -71,6 +70,7 @@ export async function verifyUserCredentials(req, res, next) {
       return res.status(401).send({ message: 'Senha inválida!' });
     } else {
       res.locals.user.user_id = user.rows[0].id;
+      res.locals.user.name = user.rows[0].name;
       next();
     }
   } catch (err) {
@@ -99,9 +99,9 @@ export async function sessionExists(req, res, next) {
 }
 
 export async function generateToken(req, res, next) {
-  const { user_id, email, password } = res.locals.user;
+  const { user_id, name, email } = res.locals.user;
 
-  const token = jwt.sign({ email, password }, process.env.SECRET);
+  const token = jwt.sign({ user_id, name, email }, process.env.SECRET);
 
   try {
     await connection.query(`INSERT INTO sessions (user_id, token) VALUES ($1, $2)`, [user_id, token]);
