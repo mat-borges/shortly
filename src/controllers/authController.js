@@ -14,18 +14,21 @@ export async function postSignUp(req, res) {
 
 export async function postSignIn(req, res) {
   const { token } = res.locals;
+  const { user_id, name, email } = res.locals.user;
+
   try {
-    res.send({ token });
+    res.send({ token, user_id, name, email });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
 }
 
-export async function getTest(req, res) {
+export async function deleteSignOut(req, res) {
+  const { token } = res.locals;
   try {
-    const response = await connection.query(`SELECT * FROM sessions;`);
-    res.send(response.rows);
+    await connection.query(`UPDATE sessions SET status='closed' WHERE token=$1;`, [token]);
+    res.sendStatus(204);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);

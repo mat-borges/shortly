@@ -2,7 +2,8 @@ import { connection } from '../db/db.js';
 import { nanoid } from 'nanoid';
 
 export async function postShortUrl(req, res) {
-  const { url, user_id } = res.locals;
+  const { url } = res.locals;
+  const { user_id } = res.locals.user;
   const shortUrl = nanoid(12);
 
   try {

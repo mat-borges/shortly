@@ -1,14 +1,32 @@
 import { connection } from '../db/db.js';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
-export async function verifyAuthorization(req, res, next) {
+dotenv.config();
+
+export async function validateToken(req, res, next) {
   const { authorization } = req.headers;
   const token = authorization?.replace(`Bearer `, ``);
+
+  try {
+    const { user_id, name, email } = jwt.verify(token, process.env.SECRET);
+    res.locals.token = token;
+    res.locals.user = { user_id, name, email };
+    next();
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(404);
+  }
+}
+
+export async function verifySession(req, res, next) {
+  const { token } = res.locals;
+
   try {
     const session = await connection.query(`SELECT * FROM sessions WHERE token=$1`, [token]);
     if (!session.rows[0]) {
       res.sendStatus(401);
     } else {
-      res.locals.user_id = parseInt(session.rows[0].user_id);
       next();
     }
   } catch (err) {
