@@ -1,6 +1,6 @@
-import { connection } from '../db/db.js';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import sessionRepository from '../repositories/sessionRepository.js';
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ export async function verifySession(req, res, next) {
   const { token } = res.locals;
 
   try {
-    const session = await connection.query(`SELECT * FROM sessions WHERE token=$1`, [token]);
+    const session = await sessionRepository.getSessionByToken(token);
     if (!session.rows[0]) {
       res.sendStatus(401);
     } else {

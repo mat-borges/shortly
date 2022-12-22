@@ -1,10 +1,11 @@
-import { connection } from '../db/db.js';
+import sessionRepository from '../repositories/sessionRepository.js';
+import userRepository from '../repositories/userRepository.js';
 
 export async function postSignUp(req, res) {
   const { name, email, password } = res.locals.user;
 
   try {
-    await connection.query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3)`, [name, email, password]);
+    await userRepository.registerUser(name, email, password);
     res.sendStatus(201);
   } catch (err) {
     console.log(err);
@@ -27,7 +28,7 @@ export async function postSignIn(req, res) {
 export async function deleteSignOut(req, res) {
   const { token } = res.locals;
   try {
-    await connection.query(`UPDATE sessions SET status='closed' WHERE token=$1;`, [token]);
+    await sessionRepository.closeSession(token);
     res.sendStatus(204);
   } catch (err) {
     console.log(err);

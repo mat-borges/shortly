@@ -1,5 +1,5 @@
-import { connection } from '../db/db.js';
 import { nanoid } from 'nanoid';
+import urlRepository from '../repositories/urlRepository.js';
 
 export async function postShortUrl(req, res) {
   const { url } = res.locals;
@@ -7,11 +7,7 @@ export async function postShortUrl(req, res) {
   const shortUrl = nanoid(12);
 
   try {
-    await connection.query(`INSERT INTO urls (url, "shortUrl", user_id) VALUES ($1, $2, $3);`, [
-      url,
-      shortUrl,
-      user_id,
-    ]);
+    await urlRepository.insertShortUrl(url, shortUrl, user_id);
     res.send({ shortUrl });
   } catch (err) {
     console.log(err);
@@ -23,7 +19,7 @@ export async function getUrlById(req, res) {
   const id = parseInt(req.params.id);
 
   try {
-    const url = await connection.query(`SELECT * FROM urls WHERE id=$1`, [id]);
+    const url = await urlRepository.getUrl(id);
     if (!url.rows[0]) {
       return res.sendStatus(404);
     } else {
@@ -39,12 +35,12 @@ export async function getUrlById(req, res) {
 export async function openShortUrl(req, res) {
   const { shortUrl } = req.params;
   try {
-    const urlExist = await connection.query(`SELECT id, url, "visitCount" FROM urls WHERE "shortUrl"=$1`, [shortUrl]);
+    const urlExist = await urlRepository.getUrlByShort(shortUrl);
     if (!urlExist.rows[0]) {
       return res.sendStatus(404);
     } else {
       const { url, id, visitCount } = urlExist.rows[0];
-      await connection.query(`UPDATE urls SET "visitCount"=$1 WHERE id=$2`, [visitCount + 1, id]);
+      await urlRepository.updateVisitCount(visitCount, id);
       return res.redirect(url);
     }
   } catch (err) {
@@ -56,7 +52,7 @@ export async function openShortUrl(req, res) {
 export async function deleteShortUrl(req, res) {
   const id = parseInt(res.locals.id);
   try {
-    await connection.query(`DELETE FROM urls WHERE id=$1`, [id]);
+    await urlRepository.deleteShortUrl(id);
     res.sendStatus(204);
   } catch (err) {
     console.log(err);
