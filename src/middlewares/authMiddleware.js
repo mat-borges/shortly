@@ -19,8 +19,8 @@ export function signUpSchemaValidation(req, res, next) {
   const { error } = signUpSchema.validate(user, { abortEarly: false });
 
   if (error) {
-    const errors = error.details.map((detail) => detail.message);
-    res.status(422).send({ message: errors });
+    const errors = error.details.map((detail) => new Object({ label: detail.context.label, message: detail.message }));
+    res.status(422).send({ errors });
   } else {
     const hashPassword = bcrypt.hashSync(password, 12);
     res.locals.user = { ...user, password: hashPassword };
