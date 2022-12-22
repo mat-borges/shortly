@@ -7,7 +7,8 @@ async function getRankingTen() {
       COUNT(urls.id)::INTEGER AS "linksCount",
       SUM(urls."visitCount")::INTEGER AS "visitCount"
     FROM users
-    JOIN urls ON users.id = urls.user_id
+    LEFT JOIN urls ON users.id = urls.user_id
+    WHERE "visitCount" IS NOT NULL
     GROUP BY users.id
     ORDER BY "visitCount" DESC
     LIMIT 10;`);
