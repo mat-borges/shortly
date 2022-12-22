@@ -1,5 +1,6 @@
 import { cleanStringData } from '../server.js';
 import { connection } from '../db/db.js';
+import urlRepository from '../repositories/urlRepository.js';
 import { urlSchema } from '../models/urlSchema.js';
 
 export async function validateUrlSchema(req, res, next) {
@@ -19,7 +20,7 @@ export async function verifyUrlUser(req, res, next) {
   const id = parseInt(req.params.id);
   const user_id = parseInt(res.locals.user.user_id);
   try {
-    const url = await connection.query(`SELECT * FROM urls WHERE id=$1`, [id]);
+    const url = await urlRepository.getUrl(id);
     if (!url.rows[0]) {
       return res.sendStatus(404);
     } else if (url.rows[0]?.user_id !== user_id) {

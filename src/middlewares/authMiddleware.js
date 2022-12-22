@@ -2,9 +2,10 @@ import { signInSchema, signUpSchema } from '../models/authSchemas.js';
 
 import bcrypt from 'bcrypt';
 import { cleanStringData } from '../server.js';
-import { connection } from '../db/db.js';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import sessionRepository from '../repositories/sessionRepository.js';
+import userRepository from '../repositories/userRepository.js';
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ export function signUpSchemaValidation(req, res, next) {
 export async function checkEmailExists(req, res, next) {
   const { email } = res.locals.user;
   try {
-    const emailExists = await connection.query(`SELECT * FROM users WHERE email=$1`, [email]);
+    const emailExists = await userRepository.checkEmail(email);
 
     if (emailExists.rows[0]) {
       res.sendStatus(409);
@@ -60,7 +61,7 @@ export function signInSchemaValidation(req, res, next) {
 export async function verifyUserCredentials(req, res, next) {
   const { email, password } = res.locals.user;
   try {
-    const user = await connection.query(`SELECT * FROM users WHERE email=$1`, [email]);
+    const user = await userRepository.checkEmail(email);
     if (!user.rows[0]) {
       return res.status(401).send({ message: 'Usuário inválido!' });
     }
@@ -82,10 +83,7 @@ export async function verifyUserCredentials(req, res, next) {
 export async function sessionExists(req, res, next) {
   const { email } = res.locals.user;
   try {
-    const sessionExist = await connection.query(
-      `SELECT s.*, u.email FROM sessions s JOIN users u ON s.user_id=u.id WHERE u.email=$1`,
-      [email]
-    );
+    const sessionExist = await sessionRepository.checkSession(email);
     if (sessionExist.rows[0]?.status === `open`) {
       const { token } = sessionExist.rows[0];
       return res.send({ token });
@@ -104,7 +102,7 @@ export async function generateToken(req, res, next) {
   const token = jwt.sign({ user_id, name, email }, process.env.SECRET);
 
   try {
-    await connection.query(`INSERT INTO sessions (user_id, token) VALUES ($1, $2)`, [user_id, token]);
+    await sessionRepository.newSession(user_id, token);
     res.locals.token = token;
     next();
   } catch (err) {
